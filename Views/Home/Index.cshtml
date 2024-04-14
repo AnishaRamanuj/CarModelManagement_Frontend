@@ -1,0 +1,246 @@
+﻿@{
+    ViewData["Title"] = "Car Model Management List";
+}
+
+
+<div class="card mb-5 mb-xl-8">
+
+    <!--begin::Header-->
+    <div class="card-header border-0 pt-5">
+        <h3 class="card-title align-items-start flex-column">
+            <span class="card-label fw-bolder fs-3 mb-1">Customer List</span>
+        </h3>
+        <div class="card-toolbar" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-trigger="hover" title="Click to add Menu ">
+            <a id="AddCarModel" href="#" class="btn btn-sm btn-primary btn-active-primary" data-bs-toggle="modal" data-bs-target="#add_event">
+                <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+                <span class="svg-icon svg-icon-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect opacity="0.5" x="11.364" y="20.364" width="16" height="2" rx="1" transform="rotate(-90 11.364 20.364)" fill="black" />
+                        <rect x="4.36396" y="11.364" width="16" height="2" rx="1" fill="black" />
+                    </svg>
+                </span>
+                <!--end::Svg Icon-->
+            </a>
+        </div>
+    </div>
+
+    <!--end::Header-->
+    <!--begin::Body-->
+    <div class="card-body py-3">
+        <!--begin::Table container-->
+        <div class="table-responsive">
+            <!--begin::Table-->
+            <table id="CarsTable" class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
+                <!--begin::Table head-->
+                <thead>
+                    <tr class="fw-bolder text-muted">
+                        <th>Brand Name </th>
+                        <th>Class</th>
+                        <th>ModelCode </th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>ManufacturedOn</th>
+                        <th>Active</th>
+                    </tr>
+                </thead>
+                <!--end::Table head-->
+                <!--begin::Table body-->
+                <tbody>
+                </tbody>
+                <!--end::Table body-->
+            </table>
+            <!--end::Table-->
+        </div>
+        <!--end::Table container-->
+    </div>
+    <!--begin::Body-->
+</div>
+
+<div class="modal fade" id="add_event" tabindex="-1" aria-hidden="true">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered  modal-dialog-scrollable ">
+        <!--begin::Modal content-->
+        <div class="modal-content rounded">
+            <!--begin::Modal header-->
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <!--begin::Close-->
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                    <span class="svg-icon svg-icon-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+                        </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <!--begin::Modal header-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                <!--begin:Form-->
+                <form id="carForm" class="form" action="#">
+                    <!--begin::Heading-->
+                    <div class="mb-13">
+                        <!--begin::Title-->
+                        <h1 class="mb-3 carTitle">Add Car</h1>
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Heading-->
+                    <!--begin::Input group-->
+                 
+                    <div class="row g-9 mb-8">
+                        <!--begin::Col-->
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-6 fw-bold mb-2">Brand</label>
+                            <select id="ddlBrand" class="form-select form-select-solid" data-hide-search="true" data-placeholder="Select a Brand" name="ddlBrand">
+                                <option value="Audi">Audi</option>
+                                <option value="Jaguar">Jaguar</option>
+                                <option value="Land Rover">Land Rover</option>
+                                <option value="Renault">Renault</option>
+                            </select>
+                        </div>
+
+                        <!--end::Col-->
+                    </div>
+                    <div class="row g-9 mb-8">
+                        <!--begin::Col-->
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-6 fw-bold mb-2">Class</label>
+                            <select id="ddlClass" class="form-select form-select-solid" data-hide-search="true" data-placeholder="Select a Class" name="ddlClass">
+                                <option value="A-Class">A-Class</option>
+                                <option value="B-Class">B-Class</option>
+                                <option value="C-Class">C-Class</option>
+                            </select>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+
+                    <div class="d-flex flex-column mb-8 fv-row">
+                        <!--begin::Label-->
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2"> Model Name <span style="color:red" class="required"></span> </label>
+                        <!--end::Label-->
+                        <input id="txtModelName" type="text" class="form-control form-control-solid" placeholder="Enter Model Name " name="txtModelName" />
+                    </div>
+
+                    <div class="d-flex flex-column mb-8 fv-row">
+                        <!--begin::Label-->
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2"> ModelCode <span style="color:red" class="required"></span> </label>
+                        <!--end::Label-->
+                        <input id="txtModelCode" type="text" class="form-control form-control-solid" maxlength="10" placeholder="Enter Model Code " name="txtModelCode" />
+                    </div>
+
+                    <div class="d-flex flex-column mb-8 fv-row">
+                        <!--begin::Label-->
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2"> Description<span style="color:red" class="required"></span> </label>
+                        <!--end::Label-->
+                        <textarea id="txtDescription" name="txtDescription" rows="4" cols="50" class="form-control form-control-solid"> </textarea>
+                    </div>
+
+               
+                    <div class="d-flex flex-column mb-8 fv-row">
+                        <!--begin::Label-->
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2"> Features<span style="color:red" class="required"></span> </label>
+                        <!--end::Label-->
+                        <textarea id="txtFeatures" name="txtFeatures" rows="4" cols="50" class="form-control form-control-solid"> </textarea>
+                    </div>
+
+                    <div class="d-flex flex-column mb-8 fv-row">
+                        <!--begin::Label-->
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2"> Price <span style="color:red" class="required"></span> </label>
+                        <!--end::Label-->
+                        <input id="txtPrice" type="number" class="form-control form-control-solid" placeholder="Enter Price " name="txtPrice" />
+                    </div>
+
+                    <div class="d-flex flex-column mb-8 fv-row">
+                        <!--begin::Label-->
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2"> ManufacturedOn <span style="color:red" class="required"></span> </label>
+                        <!--end::Label-->
+                        <input id="txtManufacturedOn" type="text" data-kt-inbox-listing-filter="search" class="date form-control form-control-solid ps-15 flatpickr-input active" placeholder="ManufacturedOn" name="txtManufacturedOn" >
+                    </div>
+
+                    <div class="col-md-3 fv-row">
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">Is Active ?<span style="color:red" class="required"></span></label>
+                        <input class="form-check-input" type="checkbox" value="" id="chkIsActive">
+                    </div>
+                    <!--end::Input group-->
+                    <!--begin::Actions-->
+                    <div class="text-center">
+                        <button id="btnSubmit" type="button" class="btn btn-primary">Submit</button>
+                        <button id="btnUpdate" type="button" class="btn btn-primary">Update</button>
+                       @* <span class="indicator-progress">
+                            Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>*@
+                    </div>
+                    <!--end::Actions-->
+                </form>
+                <!--end:Form-->
+            </div>
+            <!--end::Modal body-->
+        </div>
+        <!--end::Modal content-->
+    </div>
+    <!--end::Modal dialog-->
+</div>
+
+<div class="modal fade" id="ConfirmDeleteCustomerModal" tabindex="-1" aria-hidden="true">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered  modal-dialog-scrollable ">
+        <!--begin::Modal content-->
+        <div class="modal-content rounded">
+            <!--begin::Modal header-->
+            <div class="modal-header pb-0 border-0 justify-content-end">
+                <!--begin::Close-->
+                <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
+                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                    <span class="svg-icon svg-icon-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+                        </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                </div>
+                <!--end::Close-->
+            </div>
+            <!--begin::Modal header-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                <!--begin::Heading-->
+                <div class="mb-13">
+                    <!--begin::Title-->
+                    <h1 class="mb-3">Delete Car</h1>
+                    <!--end::Title-->
+                </div>
+                <!--end::Heading-->
+                <div class="row g-9 mb-8">
+                    <label class="fs-6 fw-bold mb-2">Are you sure you want to delete Car ?</label>
+                </div>
+                <!--begin::Actions-->
+                <div class="text-center">
+                    <button type="button" id="btnCancel" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="btnDeleteCustomer" class="btn btn-primary">
+                        <span class="indicator-label">Delete</span>
+                        <span class="indicator-progress">
+                            Please wait...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+                <!--end::Actions-->
+            </div>
+            <!--end::Modal body-->
+        </div>
+        <!--end::Modal content-->
+    </div>
+    <!--end::Modal dialog-->
+</div>
+
+@section Scripts{
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
+    <script src="~/js/Custom/CarList.js"></script>
+}
