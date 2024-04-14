@@ -35,7 +35,7 @@ namespace CarModelManagement.Controllers
             {
                 var token = Request.Headers["Authorization"];
                 List<CarDTO> carModel = new List<CarDTO>();
-                var resultClient = apiUtility.GetApi(CarListBaseUrl + "/GetAllMenu", token);
+                var resultClient = apiUtility.GetApi(CarListBaseUrl + "/GetAllCars", token);
                 if (resultClient.IsSuccessStatusCode)
                 {
                     var data = resultClient.Content.ReadAsStringAsync().Result;
