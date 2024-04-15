@@ -7,6 +7,7 @@ using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Core services
 builder.Services.AddControllersWithViews();
 builder.Services.AddMvc();
@@ -19,34 +20,18 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddResponseCompression();
 
 var app = builder.Build();
+var configuration = builder.Configuration;
+IWebHostEnvironment environment = builder.Environment;
+configuration
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    //.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    //.AddJsonFile("Config/ConnectionString.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 app.UseStaticFiles();
 // Third-party services (if any)
 // builder.Services.AddDbContext<MyDbContext>();
 
-// Configure the host
-Host.CreateDefaultBuilder(args)
-    .ConfigureWebHostDefaults(webBuilder =>
-    {
-        webBuilder.UseIIS();
-        webBuilder.ConfigureAppConfiguration((hostingContext, config) => {
-            var env = hostingContext.HostingEnvironment;
-            var ConfigPath = Path.Combine(env.ContentRootPath, "Config");
-
-            config.AddJsonFile(Path.Combine(ConfigPath, "appsettings.json"), optional: true, reloadOnChange: true);
-
-            if (env.IsEnvironment("Development"))
-            {
-                config.AddJsonFile(Path.Combine(ConfigPath, $"appsettings.{env.EnvironmentName}.json"), optional: true, reloadOnChange: true);
-            }
-
-            config.AddEnvironmentVariables();
-        });
-        webBuilder.ConfigureLogging(logging =>
-        {
-            logging.ClearProviders();
-            logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-        });
-    });
 
 // Middleware
 if (!app.Environment.IsDevelopment())

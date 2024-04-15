@@ -1,10 +1,12 @@
 ﻿using CarModelManagement.BLL.Helper;
 using CarModelManagement.BLL.Models;
+using CarModelManagement.FluentValidation;
 using CarModelManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace CarModelManagement.Controllers
 {
@@ -33,9 +35,9 @@ namespace CarModelManagement.Controllers
         {
             try
             {
-                var token = Request.Headers["Authorization"];
+               
                 List<CarDTO> carModel = new List<CarDTO>();
-                var resultClient = apiUtility.GetApi(CarListBaseUrl + "/GetAllCars", token);
+                var resultClient = apiUtility.GetApi(CarListBaseUrl + "/GetAllCars", "");
                 if (resultClient.IsSuccessStatusCode)
                 {
                     var data = resultClient.Content.ReadAsStringAsync().Result;
@@ -72,26 +74,106 @@ namespace CarModelManagement.Controllers
             try
             {
                 var success = "";
-                var token = Request.Headers["Authorization"];
+                car.IsActive = true;
+                car.IsDeleted = false;
+                car.CarId = 0;
                 var json = JsonConvert.SerializeObject(car);
-
-                var resultClient = apiUtility.PostApi(CarListBaseUrl + "/AddCar/", car, token);
-                if (resultClient.IsSuccessStatusCode)
+                var validator = new CarValidator();
+                var validationResult = validator.Validate(car);
+                if (validationResult.IsValid)
                 {
-                    var data = resultClient.Content.ReadAsStringAsync().Result;
-                    success = JsonConvert.DeserializeObject<string>(data);
-                    return Json(new { success, message = "Menu Data Successfully Inserted" });
+                    var resultClient = apiUtility.PostApi(CarListBaseUrl + "/AddCar/", car, "");
+                    if (resultClient.IsSuccessStatusCode)
+                    {
+                        var data = resultClient.Content.ReadAsStringAsync().Result;
+                        success = JsonConvert.DeserializeObject<string>(data);
+                        return Json(new { success, message = "Car Data Successfully Inserted" });
+                    }
+
+                    else
+                    {
+                        string error = "Error";
+                        return Json(new { error, message = "Error while Inserting records!!" });
+                    }
                 }
-               
                 else
                 {
-                    string error = "Error";
-                    return Json(new { error, message = "Error while Inserting records!!" });
+                    var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+                    return Json(new { success = false, errors });
                 }
             }
             catch (Exception ex)
             {
                 return Json(null);
+            }
+        }
+        
+
+        [HttpPost]
+        public ActionResult UpdateCar(Cars car)
+        {
+            try
+            {
+                var success = "";
+                car.IsDeleted = false;
+
+                var json = JsonConvert.SerializeObject(car);
+
+                var validator = new CarValidator();
+                var validationResult = validator.Validate(car);
+                if (validationResult.IsValid)
+                {
+                    var resultClient = apiUtility.PostApi(CarListBaseUrl + "/UpdateCar/", car, "");
+                    if (resultClient.IsSuccessStatusCode)
+                    {
+                        var data = resultClient.Content.ReadAsStringAsync().Result;
+                        success = JsonConvert.DeserializeObject<string>(data);
+                        return Json(new { success, message = "Car Data Successfully Updated" });
+                    }
+                    else
+                    {
+                        string error = "fail";
+                        return Json(new { error, message = "Error while updating Car records!!" });
+                    }
+                }
+                else
+                {
+                    var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+                    return Json(new { success = false, errors });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("UpdateMenu: " + ex.Message);
+                throw;
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteCar(int car)
+        {
+            try
+            {
+                var success = "";
+                var json = JsonConvert.SerializeObject(car);
+                var resultClient = apiUtility.PostApi(CarListBaseUrl + "/DeleteCar?car=", car, "");
+
+                if (resultClient.IsSuccessStatusCode)
+                {
+                    var data = resultClient.Content.ReadAsStringAsync().Result;
+                    success = JsonConvert.DeserializeObject<string>(data);
+                    return Json(new { success, message = "Car Data Successfully Deleted" });
+                }
+                else
+                {
+                    string error = "fail";
+                    return Json(new { error, message = "Error while deleting Car records!!" });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("DeleteMenu: " + ex.Message);
+                throw;
             }
         }
     }
