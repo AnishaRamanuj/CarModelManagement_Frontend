@@ -14,49 +14,53 @@ namespace CarModelManagement_CommonServices.Services
         {
         }
 
-        public async Task<List<Car>> GetAllCars()
+        public async Task<List<Cars>> GetAllCars()
         {
             try
             {
+                //string sql = "EXEC GetOrDeleteCar @Mode, @Result Out";
                 string sql = "EXEC CarModels @Mode, @Result Out";
                 List<SqlParameter> parms = new List<SqlParameter>
                     {
                         new SqlParameter { ParameterName = "@Mode", Value = "Select" },
                         new SqlParameter { ParameterName = "@Result", Value = "Success" },
                     };
-                return await _context.Car.FromSqlRaw(sql, parms.ToArray()).ToListAsync();
+                //return await _context.Cars.FromSqlRaw(sql, parms.ToArray()).ToListAsync();
+                var cars = await _context.Cars.FromSqlRaw(sql, parms.ToArray()).ToListAsync();
+                return cars ?? new List<Cars>(); // Check for null and return an empty list if null
             }
             catch (Exception ex)
             {
                 throw;
             }
         }
-        public async Task<string> AddCar(Car car)
+      
+        public async Task<string> AddCar(Cars car)
         {
             string OutValue = "";
             try
             {
-                string sql = "EXEC CarModels @CarId, @Mode, @Brand, @Class, @ModelName, @ModelCode, @Description, @Features, @Price, @ManufacturedOn, @IsActive, @IsDeleted, @Result OUT";
+                string sql = "EXEC CarModels @Mode, @Result OUT, @CarId, @Brand, @Class, @ModelName, @ModelCode, @Description, @Features, @Price, @ManufacturedOn, @IsActive, @IsDeleted";
                 List<SqlParameter> parms = new List<SqlParameter>
-    {
-        new SqlParameter { ParameterName = "@CarId", Value = car.CarId },
-        new SqlParameter { ParameterName = "@Mode", Value = "Insert" },
-        new SqlParameter { ParameterName = "@Brand", Value = (object)car.Brand ?? DBNull.Value },
-        new SqlParameter { ParameterName = "@Class", Value = (object)car.Class ?? DBNull.Value },
-        new SqlParameter { ParameterName = "@ModelName", Value = (object)car.ModelName ?? DBNull.Value },
-        new SqlParameter { ParameterName = "@ModelCode", Value = (object)car.ModelCode ?? DBNull.Value },
-        new SqlParameter { ParameterName = "@Description", Value = (object)car.Description ?? DBNull.Value },
-        new SqlParameter { ParameterName = "@Features", Value = (object)car.Features ?? DBNull.Value },
-        new SqlParameter { ParameterName = "@Price", Value = car.Price },
-        new SqlParameter { ParameterName = "@ManufacturedOn", Value = car.ManufacturedOn },
-        new SqlParameter { ParameterName = "@IsActive", Value = (object)car.IsActive ?? DBNull.Value },
-        new SqlParameter { ParameterName = "@IsDeleted", Value = (object)car.IsDeleted ?? DBNull.Value }
-    };
-                SqlParameter resultParam = new SqlParameter { ParameterName = "@Result", SqlDbType = SqlDbType.NVarChar, Size = 1000, Direction = ParameterDirection.Output };
-                parms.Add(resultParam);
-
+            {
+                new SqlParameter { ParameterName = "@Mode", Value = "Insert" },
+                new SqlParameter { ParameterName = "@Result", Value = "Success" },
+                new SqlParameter { ParameterName = "@CarId", Value = 0 },
+                new SqlParameter { ParameterName = "@Brand", Value = (object)car.Brand ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@Class", Value = (object)car.Class ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@ModelName", Value = (object)car.ModelName ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@ModelCode", Value = (object)car.ModelCode ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@Description", Value = (object)car.Description ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@Features", Value = (object)car.Features ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@Price", Value = car.Price },
+                new SqlParameter { ParameterName = "@ManufacturedOn", Value = car.ManufacturedOn },
+                new SqlParameter { ParameterName = "@IsActive", Value = (object)car.IsActive ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@IsDeleted", Value = (object)car.IsDeleted ?? DBNull.Value }
+            };
+               
                 await _context.Database.ExecuteSqlRawAsync(sql, parms.ToArray());
-                OutValue = Convert.ToString(resultParam.Value);
+             
+                OutValue = Convert.ToString(parms[1].Value);
 
                 return OutValue;
             }
@@ -69,32 +73,31 @@ namespace CarModelManagement_CommonServices.Services
         }
 
 
-        public async Task<string> UpdateCar(Car car)
+        public async Task<string> UpdateCar(Cars car)
         {
             string OutValue = "";
             try
             {
-                string sql = "EXEC CarModels @CarId, @Mode, @Result Out, @Brand, @Class, @ModelName, @ModelCode, @Description, @Features, @Price, @ManufacturedOn,@IsActive,@IsDeleted";
+                string sql = "EXEC CarModels @Mode, @Result OUT, @CarId, @Brand, @Class, @ModelName, @ModelCode, @Description, @Features, @Price, @ManufacturedOn, @IsActive, @IsDeleted";
                 List<SqlParameter> parms = new List<SqlParameter>
-                    {
-                        new SqlParameter { ParameterName = "@CarId", Value = car.CarId },
-                        new SqlParameter { ParameterName = "@Mode", Value = "Update" },
-                        new SqlParameter { ParameterName = "@Result", Value = "Success" },
-                        new SqlParameter { ParameterName = "@Brand", Value = (car.Brand) != null ? car.Brand : DBNull.Value },
-                        new SqlParameter { ParameterName = "@Class", Value =   (car.Class) != null ? car.Class : DBNull.Value  },
-                        new SqlParameter { ParameterName = "@ModelName", Value = (car.ModelName) != null ? car.ModelName : DBNull.Value },
-                        new SqlParameter {ParameterName = "@ModelCode", Value =(car.ModelCode) != null ? car.ModelCode : DBNull.Value},
-                        new SqlParameter { ParameterName = "@Description", Value = (car.Description) != null ? car.Description : DBNull.Value },
-                        new SqlParameter { ParameterName = "@Features", Value = (car.Features) != null ? car.Features : DBNull.Value },
-                        new SqlParameter { ParameterName = "@Price", Value = car.Price },
-                        new SqlParameter { ParameterName = "@ManufacturedOn", Value = car.ManufacturedOn },
-                        new SqlParameter { ParameterName = "@IsActive", Value = (car.IsActive.HasValue) ? car.IsActive : DBNull.Value },
-                        new SqlParameter { ParameterName = "@IsDeleted", Value = (car.IsDeleted.HasValue) ? car.IsDeleted : DBNull.Value }
-                    };
-                parms[2].Direction = ParameterDirection.Output;
-                parms[2].Size = 1000;
+            {
+                new SqlParameter { ParameterName = "@Mode", Value = "Update" },
+                new SqlParameter { ParameterName = "@Result", Value = "Success", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.NVarChar, Size = 1000 },
+                new SqlParameter { ParameterName = "@CarId", Value = car.CarId },
+                new SqlParameter { ParameterName = "@Brand", Value = (car.Brand != null) ? car.Brand : DBNull.Value },
+                new SqlParameter { ParameterName = "@Class", Value = (car.Class != null) ? car.Class : DBNull.Value },
+                new SqlParameter { ParameterName = "@ModelName", Value = (car.ModelName != null) ? car.ModelName : DBNull.Value },
+                new SqlParameter { ParameterName = "@ModelCode", Value = (car.ModelCode != null) ? car.ModelCode : DBNull.Value },
+                new SqlParameter { ParameterName = "@Description", Value = (car.Description != null) ? car.Description : DBNull.Value },
+                new SqlParameter { ParameterName = "@Features", Value = (car.Features != null) ? car.Features : DBNull.Value },
+                new SqlParameter { ParameterName = "@Price", Value = car.Price },
+                new SqlParameter { ParameterName = "@ManufacturedOn", Value = car.ManufacturedOn },
+                new SqlParameter { ParameterName = "@IsActive", Value = (car.IsActive.HasValue) ? car.IsActive : DBNull.Value },
+                new SqlParameter { ParameterName = "@IsDeleted", Value = (car.IsDeleted.HasValue) ? car.IsDeleted : DBNull.Value }
+            };
+
                 await _context.Database.ExecuteSqlRawAsync(sql, parms.ToArray());
-                OutValue = Convert.ToString(parms[2].Value);
+                OutValue = Convert.ToString(parms[1].Value);
                 return OutValue;
             }
             catch (Exception ex)
@@ -103,24 +106,24 @@ namespace CarModelManagement_CommonServices.Services
             }
         }
 
-        public async Task<string> DeleteCar(Car car)
+
+        public async Task<string> DeleteCar(int car)
         {
-            string OutValue = "";
+            string outValue = "";
             try
             {
-                string sql = "EXEC CarModels @CarId, @Mode, @Result Out";
+                string sql = "EXEC CarModels @Mode, @Result OUTPUT, @CarId";
                 List<SqlParameter> parms = new List<SqlParameter>
-                    {
-                        new SqlParameter { ParameterName = "@carID", Value = car.CarId },
-                        new SqlParameter { ParameterName = "@Mode", Value = "Delete" },
-                        new SqlParameter { ParameterName = "@Result", Value = "Success" },
-                       
-                    };
-                parms[2].Direction = ParameterDirection.Output;
-                parms[2].Size = 1000;
+            {
+                new SqlParameter { ParameterName = "@Mode", Value = "Delete" },
+                new SqlParameter { ParameterName = "@Result", SqlDbType = SqlDbType.NVarChar, Size = 1000, Direction = ParameterDirection.Output },
+                new SqlParameter { ParameterName = "@CarId", Value = car }
+            };
+
                 await _context.Database.ExecuteSqlRawAsync(sql, parms.ToArray());
-                OutValue = Convert.ToString(parms[2].Value);
-                return OutValue;
+
+                outValue = Convert.ToString(parms[1].Value);
+                return outValue;
             }
             catch (Exception ex)
             {
@@ -129,6 +132,20 @@ namespace CarModelManagement_CommonServices.Services
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 USE [CarModel]
 GO
 /****** Object:  StoredProcedure [dbo].[CarModels]    Script Date: 4/16/2024 1:06:00 AM ******/
