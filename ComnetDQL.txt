@@ -1,0 +1,232 @@
+using CarModelManagement_CommonServices.Context.CarModelManagementModel;
+using CarModelManagement_CommonServices.Repositories.Bases;
+using CarModelManagement_CommonServices.Services.Interfaces;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
+
+namespace CarModelManagement_CommonServices.Services
+{
+    public class CarRepository : CarsBaseRepository, ICarRepository
+    {
+
+        public CarRepository(CarsContext context) : base(context)
+        {
+        }
+
+        public async Task<List<Cars>> GetAllCars()
+        {
+            try
+            {
+                //string sql = "EXEC GetOrDeleteCar @Mode, @Result Out";
+                string sql = "EXEC CarModels @Mode, @Result Out";
+                List<SqlParameter> parms = new List<SqlParameter>
+                    {
+                        new SqlParameter { ParameterName = "@Mode", Value = "Select" },
+                        new SqlParameter { ParameterName = "@Result", Value = "Success" },
+                    };
+                //return await _context.Cars.FromSqlRaw(sql, parms.ToArray()).ToListAsync();
+                var cars = await _context.Cars.FromSqlRaw(sql, parms.ToArray()).ToListAsync();
+                return cars ?? new List<Cars>(); // Check for null and return an empty list if null
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+      
+        public async Task<string> AddCar(Cars car)
+        {
+            string OutValue = "";
+            try
+            {
+                string sql = "EXEC CarModels @Mode, @Result OUT, @CarId, @Brand, @Class, @ModelName, @ModelCode, @Description, @Features, @Price, @ManufacturedOn, @IsActive, @IsDeleted";
+                List<SqlParameter> parms = new List<SqlParameter>
+            {
+                new SqlParameter { ParameterName = "@Mode", Value = "Insert" },
+                new SqlParameter { ParameterName = "@Result", Value = "Success" },
+                new SqlParameter { ParameterName = "@CarId", Value = 0 },
+                new SqlParameter { ParameterName = "@Brand", Value = (object)car.Brand ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@Class", Value = (object)car.Class ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@ModelName", Value = (object)car.ModelName ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@ModelCode", Value = (object)car.ModelCode ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@Description", Value = (object)car.Description ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@Features", Value = (object)car.Features ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@Price", Value = car.Price },
+                new SqlParameter { ParameterName = "@ManufacturedOn", Value = car.ManufacturedOn },
+                new SqlParameter { ParameterName = "@IsActive", Value = (object)car.IsActive ?? DBNull.Value },
+                new SqlParameter { ParameterName = "@IsDeleted", Value = (object)car.IsDeleted ?? DBNull.Value }
+            };
+               
+                await _context.Database.ExecuteSqlRawAsync(sql, parms.ToArray());
+             
+                OutValue = Convert.ToString(parms[1].Value);
+
+                return OutValue;
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception appropriately, e.g., log the exception
+                throw;
+            }
+
+        }
+
+
+        public async Task<string> UpdateCar(Cars car)
+        {
+            string OutValue = "";
+            try
+            {
+                string sql = "EXEC CarModels @Mode, @Result OUT, @CarId, @Brand, @Class, @ModelName, @ModelCode, @Description, @Features, @Price, @ManufacturedOn, @IsActive, @IsDeleted";
+                List<SqlParameter> parms = new List<SqlParameter>
+            {
+                new SqlParameter { ParameterName = "@Mode", Value = "Update" },
+                new SqlParameter { ParameterName = "@Result", Value = "Success", Direction = ParameterDirection.Output, SqlDbType = SqlDbType.NVarChar, Size = 1000 },
+                new SqlParameter { ParameterName = "@CarId", Value = car.CarId },
+                new SqlParameter { ParameterName = "@Brand", Value = (car.Brand != null) ? car.Brand : DBNull.Value },
+                new SqlParameter { ParameterName = "@Class", Value = (car.Class != null) ? car.Class : DBNull.Value },
+                new SqlParameter { ParameterName = "@ModelName", Value = (car.ModelName != null) ? car.ModelName : DBNull.Value },
+                new SqlParameter { ParameterName = "@ModelCode", Value = (car.ModelCode != null) ? car.ModelCode : DBNull.Value },
+                new SqlParameter { ParameterName = "@Description", Value = (car.Description != null) ? car.Description : DBNull.Value },
+                new SqlParameter { ParameterName = "@Features", Value = (car.Features != null) ? car.Features : DBNull.Value },
+                new SqlParameter { ParameterName = "@Price", Value = car.Price },
+                new SqlParameter { ParameterName = "@ManufacturedOn", Value = car.ManufacturedOn },
+                new SqlParameter { ParameterName = "@IsActive", Value = (car.IsActive.HasValue) ? car.IsActive : DBNull.Value },
+                new SqlParameter { ParameterName = "@IsDeleted", Value = (car.IsDeleted.HasValue) ? car.IsDeleted : DBNull.Value }
+            };
+
+                await _context.Database.ExecuteSqlRawAsync(sql, parms.ToArray());
+                OutValue = Convert.ToString(parms[1].Value);
+                return OutValue;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+        public async Task<string> DeleteCar(int car)
+        {
+            string outValue = "";
+            try
+            {
+                string sql = "EXEC CarModels @Mode, @Result OUTPUT, @CarId";
+                List<SqlParameter> parms = new List<SqlParameter>
+            {
+                new SqlParameter { ParameterName = "@Mode", Value = "Delete" },
+                new SqlParameter { ParameterName = "@Result", SqlDbType = SqlDbType.NVarChar, Size = 1000, Direction = ParameterDirection.Output },
+                new SqlParameter { ParameterName = "@CarId", Value = car }
+            };
+
+                await _context.Database.ExecuteSqlRawAsync(sql, parms.ToArray());
+
+                outValue = Convert.ToString(parms[1].Value);
+                return outValue;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USE [CarModel]
+GO
+/****** Object:  StoredProcedure [dbo].[CarModels]    Script Date: 4/16/2024 1:06:00 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+--  EXEC CarModels @Mode = 'Delete',@CarId=1006,  @Result='Success'
+ALTER PROCEDURE [dbo].[CarModels]
+    @Mode NVARCHAR(50)= NULL,
+	@Result NVARCHAR(50) OUTPUT,
+	@CarId INT= NULL,
+    @Brand NVARCHAR(50)= NULL,
+    @Class NVARCHAR(50)= NULL,
+    @ModelName NVARCHAR(100)= NULL,
+    @ModelCode NVARCHAR(10)= NULL,
+    @Description NVARCHAR(MAX)= NULL,
+    @Features NVARCHAR(MAX)= NULL,
+    @Price INT= NULL,
+    @ManufacturedOn DATETIME= NULL,
+    @IsActive BIT= NULL,
+    @IsDeleted BIT= NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+	  IF @Mode = 'Select'
+    BEGIN
+        BEGIN TRY
+            SELECT *
+            FROM Cars;
+        SET @Result = 'Success';
+        END TRY
+        BEGIN CATCH
+            SET @Result = 'Failure';
+        END CATCH;
+    END
+    else IF @Mode = 'Insert'
+    BEGIN
+        BEGIN TRY
+            INSERT INTO Cars
+                (Brand, Class, ModelName, ModelCode, Description, Features, Price, ManufacturedOn, IsActive, IsDeleted)
+            VALUES
+                (@Brand, @Class, @ModelName, @ModelCode, @Description, @Features, @Price, @ManufacturedOn, @IsActive, @IsDeleted);
+            -- Return success message
+            SET @Result = 'Success';
+        END TRY
+        BEGIN CATCH
+            SET @Result = 'Failure';
+        END CATCH;
+    END
+
+
+   ELSE IF @Mode = 'Update'
+BEGIN
+    BEGIN TRY
+        UPDATE Cars
+        SET Brand = @Brand, Class = @Class, ModelName = @ModelName, ModelCode = @ModelCode, 
+            Description = @Description, Features = @Features, Price = @Price, ManufacturedOn = @ManufacturedOn, 
+            IsActive = @IsActive, IsDeleted = @IsDeleted
+        WHERE CarId = @CarId;
+        
+        -- Return the number of rows affected
+        SELECT @@ROWCOUNT AS AffectedRows;
+        SET @Result = 'Success';
+    END TRY
+    BEGIN CATCH
+        SET @Result = 'Failure';
+    END CATCH;
+END
+
+    ELSE IF @Mode = 'Delete'
+    BEGIN
+	 BEGIN TRY
+        DELETE FROM Cars
+        WHERE CarId = @CarId;
+        -- Return the number of rows affected
+        SELECT @@ROWCOUNT AS AffectedRows;
+   SET @Result = 'Deleted';
+    END TRY
+    BEGIN CATCH
+        SET @Result = 'Failure';
+    END CATCH;
+END
+END
