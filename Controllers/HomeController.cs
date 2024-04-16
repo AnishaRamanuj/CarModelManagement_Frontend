@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 namespace CarModelManagement.Controllers
@@ -80,6 +81,22 @@ namespace CarModelManagement.Controllers
                 var json = JsonConvert.SerializeObject(car);
                 var validator = new CarValidator();
                 var validationResult = validator.Validate(car);
+
+               // car.FilePath = new List<string>();
+
+                foreach (var file in HttpContext.Request.Form.Files)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CarModelImages", file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyToAsync(stream);
+                    }
+
+                    // Add the file path to the list
+                    //car.FilePath.Add(filePath);
+                   // car.Images = filePath;
+                }
+
                 if (validationResult.IsValid)
                 {
                     var resultClient = apiUtility.PostApi(CarListBaseUrl + "/AddCar/", car, "");
@@ -121,6 +138,20 @@ namespace CarModelManagement.Controllers
 
                 var validator = new CarValidator();
                 var validationResult = validator.Validate(car);
+
+                foreach (var file in HttpContext.Request.Form.Files)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "CarModelImages", file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyToAsync(stream);
+                    }
+
+                    // Add the file path to the list
+                    //car.FilePath.Add(filePath);
+                    // car.Images = filePath;
+                }
+
                 if (validationResult.IsValid)
                 {
                     var resultClient = apiUtility.PostApi(CarListBaseUrl + "/UpdateCar/", car, "");

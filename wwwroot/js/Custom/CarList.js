@@ -85,7 +85,11 @@ function GetCarData(){
       {
         "data": "manufacturedOn",
         "autoWidth": true,
-        "searchable": true
+        "searchable": true,
+        "render": function (data) {
+          return moment(data).format('DD/MM/YYYY');
+        }
+
       },
       {
         data: "isActive",
@@ -120,7 +124,14 @@ $('#btnSubmit').click(function (e) {
         formData.append("Features", $("#txtFeatures").val());
         formData.append("Price", $("#txtPrice").val());
         formData.append("ManufacturedOn", $("#txtManufacturedOn").val());
-         formData.append("IsActive", $("#chkIsActive").prop('checked'));
+       formData.append("IsActive", $("#chkIsActive").prop('checked'));
+  
+        // Append each selected file to the FormData object
+        var files = $("#MultipleFiles")[0].files;
+        for (var i = 0; i < files.length; i++) {
+          formData.append("MultipleFiles", files[i]);
+        }
+
         $.ajax({
           url: 'Home/AddCar',
           type: "post",
@@ -176,18 +187,21 @@ function EditById(id) {
         }
       }
       if (carData) {
+        
         $("#txtCarId").val(carData.carId);
-        $("#ddlBrand").val(carData.brand).change();
-        $("#ddlClass").val(carData.class).change();
-      $("#txtModelName").val(carData.modelName);
-      $("#txtModelCode").val(carData.modelCode);
-      $("#txtDescription").val(carData.description);
-      $("#ddlBrand").val(carData.carId).change();
-      $("#txtFeatures").val(carData.features);
-      $("#txtPrice").val(carData.price);
-      $("#txtManufacturedOn").val(carData.manufacturedOn);
-
+        $("#txtModelName").val(carData.modelName);
+        $("#txtModelCode").val(carData.modelCode);
+        $("#txtDescription").val(carData.description);
+        $("#ddlBrand").val(carData.carId).change();
+        $("#txtFeatures").val(carData.features);
+        $("#txtPrice").val(carData.price);
+        var manufacturedOnDate = new Date(carData.manufacturedOn);
+        var formattedManufacturedOn = manufacturedOnDate.toISOString().split('T')[0];
+        $("#txtManufacturedOn").val(formattedManufacturedOn);
         $("#chkIsActive").prop("checked", carData.isActive);
+        $("#ddlBrand").val(carData.brand.trim()).change();
+
+        $("#ddlClass").val(carData.class.trim()).change();
       }
       else {
         toastr.error('Car with id ' + id + ' not found');
@@ -200,7 +214,6 @@ function EditById(id) {
     }
   });
 }
-
 
 var deleteConfirm = function (valID) {
   $('#DeleteId').val(valID);

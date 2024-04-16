@@ -169,15 +169,17 @@
                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">Is Active ?<span style="color:red" class="required"></span></label>
                         <input class="form-check-input" type="checkbox" value="" id="chkIsActive">
                     </div>
+
+                    <div class="col-md-3 fv-row">
+                        <label class="col-form-label">Select Image</label>
+                        <input type="file" id="MultipleFiles" name="MultipleFiles" multiple accept=".jpg,.png,.gif" class="form-control" />
+                    </div>
                     <!--end::Input group-->
                     <!--begin::Actions-->
                     <div class="text-center">
                         <button id="btnSubmit" type="button" class="btn btn-primary">Submit</button>
                         <button id="btnUpdate" type="button" class="btn btn-primary">Update</button>
-                       @* <span class="indicator-progress">
-                            Please wait...
-                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                        </span>*@
+                      
                     </div>
                     <!--end::Actions-->
                 </form>
@@ -249,5 +251,7 @@
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
     <script src="~/js/Custom/CarList.js"></script>
 }
